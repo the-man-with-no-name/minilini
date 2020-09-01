@@ -329,7 +329,8 @@ def eigenvalues(
 
 
 def householder(
-    matrix: npt.NDArray[Any,Any]
+    matrix: npt.NDArray[Any,Any],
+    steps: bool = False
 ) -> Tuple:
     """
     Compute the Householder transformation of the given vector
@@ -353,20 +354,68 @@ def qr_decomposition(
     m,n = matrix.shape 
     Q = np.identity(m)
     R = matrix.copy()
+    if steps:
+        print(f'Shape of input matrix (A) is: {matrix.shape}.')
+        print(f'Set Q = I_{m}.')
+        print(f'Set R = A.\n')
     for i in range(0,n):
         v, t = householder(R[i:,i, np.newaxis])
         H = np.identity(m)
         H[i:,i:] -= t * (v @ v.T)
         R = H@R
         Q = H@Q
+        if steps:
+            print(f'Perform a Householder Transformation on the last {m-i} entries of column {i+1} obtaining v and t.')
+            print(f'Set H = I_{m}.')
+            print(f'Set the submatrix of H with rows {i+1}...{m} and columns {i+1}...{n} to H[{i+1}:{m},{i+1}:{n}] = H[{i+1}:{m},{i+1}:{n}] - t * (v @ v.transpose).')
+            print(f'Now set R = H@R and Q = H@Q.\n')
     Q, R = Q[:n].T, np.triu(R[:n])
     return Q,R
 
 
+
+
+def ut_tol(
+    matrix: npt.NDArray[Any,Any],
+    tol: float = 1e-5
+) -> bool:
+    if not (isinstance(matrix.shape, tuple) and list(map(type, matrix.shape)) == [int, int] and matrix.shape[0] == matrix.shape[1]):
+        raise MatrixDimensionException(f'Matrix shape = {matrix.shape}.',f'Matrix shape must be square.')
+    m, _ = matrix.shape 
+    for i in range(1,m):
+        for j in range(i):
+            if tol < np.sqrt(np.power(matrix[i][j],2)):
+                return False
+    return True
+
+
+
+def eigenvalues_from_qr(
+    matrix: npt.NDArray[Any,Any],
+    steps: bool = False,
+    tol: float = 1e-5,
+    t_complex: bool = False
+) -> Tuple:
+    """
+    Works if the matrix has real eigenvalues.
+    """
+    while not ut_tol(matrix,tol=tol):
+        Q,R = qr_decomposition(matrix)
+        matrix = R@Q
+    print(matrix)
+    return np.diagonal(matrix)
+
+
+
+
 if __name__ == '__main__':
-    A = np.random.randint(0,10,(5,4))
+    A = np.random.randint(0,10,(4,4))
     print(A)
-    Q,R = qr_decomposition(A)
-    print(Q)
-    print(R)
-    print(Q@R)
+    # Q,R = qr_decomposition(A,steps=True)
+    # print(Q)
+    # print(det_from_ref(Q))
+    # print(R)
+    # print(det_from_ref(R))
+    # print(Q@R)
+    print(np.linalg.eig(A)[0])
+    print(eigenvalues_from_qr(A))
