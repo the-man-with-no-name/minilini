@@ -328,32 +328,3 @@ def eigenvalues(
 
 
 
-if __name__ == '__main__':
-
-    # A = np.array([[2,1,7,12,39/2],[7,16,1/2,32,21],[3,3,2,5,6],[14,11,1,9,2/3]])
-    # print(f'REF A: {ref_check(A)}')
-    # print(f'RREF A: {rref_check(A)}')
-    # B = ref(A)
-    # print(B)
-    # print(f'REF B: {ref_check(B)}')
-    # print(f'RREF B: {rref_check(B)}')
-    # print(is_invertible(B))
-    # print(rref(B,steps=True))
-    # print(f'RREF B: {rref_check(B)}')
-
-    C = np.array([[2,2],[2,3]])
-    C = np.random.randint(0,10,size=(20,20))
-    print(C)
-    # D,_ = ref(C)
-    # print(_)
-    # print(D)
-    # print(rref(C))
-    s1 = time.time()
-    det1 = np.linalg.det(C)
-    e1 = time.time()
-    print(f'Determinant numpy.linalg = {det1} \t Time = {e1-s1}')
-    s2 = time.time()
-    det2 = det_from_ref(C)
-    e2 = time.time()
-    print(f'Determinant det_from_ref = {det2} \t Time = {e2-s2}')
-    # print(det(C,C.shape[0],datatype=float))
