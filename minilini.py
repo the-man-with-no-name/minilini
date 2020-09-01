@@ -321,7 +321,7 @@ def det_steps(
 def eigenvalues(
     matrix: npt.NDArray[Any,Any],
     shape: int,
-    datatype: type = float
+    tol: float = 1e-3
 ) -> Tuple:
     return
 
