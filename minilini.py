@@ -22,7 +22,6 @@ ______________________________________________________________________
             TODO
             eigenvalues
             eigenvectors
-            QR decomp
             SVD
             diagonalize
 """
