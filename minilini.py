@@ -328,3 +328,45 @@ def eigenvalues(
 
 
 
+def householder(
+    matrix: npt.NDArray[Any,Any]
+) -> Tuple:
+    """
+    Compute the Householder transformation of the given vector
+    """
+    v = matrix / (matrix[0] + np.copysign(np.linalg.norm(matrix), matrix[0]))
+    v[0] = 1
+    t = 2 / (v.T @ v)
+    return v, t
+
+
+
+
+def qr_decomposition(
+    matrix: npt.NDArray[Any,Any],
+    steps: bool = False,
+    tol: float = 1e-10
+) -> Tuple:
+    """
+    Compute the QR Decomposition of the given matrix
+    """
+    m,n = matrix.shape 
+    Q = np.identity(m)
+    R = matrix.copy()
+    for i in range(0,n):
+        v, t = householder(R[i:,i, np.newaxis])
+        H = np.identity(m)
+        H[i:,i:] -= t * (v @ v.T)
+        R = H@R
+        Q = H@Q
+    Q, R = Q[:n].T, np.triu(R[:n])
+    return Q,R
+
+
+if __name__ == '__main__':
+    A = np.random.randint(0,10,(5,4))
+    print(A)
+    Q,R = qr_decomposition(A)
+    print(Q)
+    print(R)
+    print(Q@R)
