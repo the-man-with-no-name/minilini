@@ -15,6 +15,9 @@ ______________________________________________________________________
             ref     - Row Echelon Form
             rref    - Reduced Row Echelon Form
             det     - Determinant
+            qr_dec  - QR Decomposition
+            eig_qr  - Eigenvalues from QR
+            det_qr  - Determinant from QR
 
             TODO
             eigenvalues
@@ -404,6 +407,15 @@ def eigenvalues_from_qr(
         matrix = R@Q
     print(matrix)
     return np.diagonal(matrix)
+
+
+
+
+def det_from_qr(
+        matrix: npt.NDArray[Any,Any]
+) -> float:
+    Q,R = qr_decomposition(matrix)
+    return (-1 if np.linalg.det(Q) < 0 else 1)*np.prod(np.diagonal(R))
 
 
 
