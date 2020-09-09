@@ -29,6 +29,7 @@ ______________________________________________________________________
 import time
 import numpy as np
 import nptyping as npt
+import sympy
 
 from fractions import Fraction
 from typing import Tuple, Any
@@ -43,6 +44,52 @@ class MatrixDimensionException(Exception):
     def __init__(self,expression,message):
         self.expression = expression
         self.message = message
+
+
+
+
+def pivot_positions(
+    matrix: npt.NDArray[Any,Any]
+) -> int:
+    #if not rref_check(matrix):
+    matrix = rref(matrix)
+    print(matrix)
+    m,n = matrix.shape
+    positions = {key: [] for key in range(n)}
+    for i in range(n):
+        for j in range(m-1,-1,-1):
+            if round(matrix[j][i],10) == 1:
+                positions[j].append(i)
+                break
+    return [positions[key][0] for key in positions.keys() if positions[key] != []], matrix
+
+
+
+
+
+
+def information(
+    matrix: npt.NDArray[Any,Any],
+    verbose: bool = False
+) -> None:
+    """
+    Get relavent information about matrix 
+        all from inv mat thm
+    """
+    size = matrix.shape
+    matrix_ref, scaling_factors = ref(matrix)
+    pivots, matrix_rref = pivot_positions(matrix_ref)
+    rank = len(pivots)
+    nullity = size[1] - rank
+    if verbose:
+        print("Information about the Matrix:\n")
+        print(matrix)
+        print(f"\nRows: \t\t {size[0]}")
+        print(f"Columns: \t {size[1]}")
+        print(f"Rank: \t\t {rank}")
+        print(f"Nullity: \t {nullity}")
+        print(f"Invertible: \t {rank == size[1]}")
+        print(f"Determinant: \t {round(np.prod(scaling_factors),2)}")
 
 
 
@@ -63,11 +110,11 @@ def ref(
     Examples:
         steps = True, as_fractions = True,
         A = np.array([[2,1,7,12,Fraction(39,2)],[7,16,Fraction(1,2),32,21],[3,3,2,5,6],[14,11,1,9,Fraction(2,3)]]),
-        B = row_echelon_form(A,steps=True,as_fractions=True)
+        B = ref(A,steps=True,as_fractions=True)
 
         steps = False, as_fractions = False
         A = np.array([[2,1,7,12,19.5],[7,16,0.5,32,21],[3,3,2,5,6],[14,11,1,9,2/3]]),
-        B = row_echelon_form(A)
+        B = ref(A)
     """
     if not (isinstance(matrix.shape, tuple) and list(map(type, matrix.shape)) == [int, int]):
         raise MatrixDimensionException(f'Matrix shape = {matrix.shape}.',f'Matrix shape must be [int,int].')
@@ -102,7 +149,7 @@ def ref(
             normfactor1 = matrix.item((i,j))
             scaling_factors.append(normfactor1)
             for l in range(m):
-                matrix.itemset((i,l),(1/normfactor1)*matrix.item((i,l)))
+                matrix.itemset((i,l),round((1/normfactor1)*matrix.item((i,l)),10))
             if steps and normfactor1 != 1:
                 print(f'Scale Row {i+1} by {normfactor1}.')
                 print(matrix)
@@ -111,7 +158,7 @@ def ref(
             for x in range(i+1,n):
                 normfactor2 = matrix[x][j]
                 for y in range(j,m):
-                    matrix.itemset((x,y),matrix.item((x,y)) - normfactor2*matrix.item((i,y)))
+                    matrix.itemset((x,y),round(matrix.item((x,y)) - normfactor2*matrix.item((i,y)),10))
                 if steps:
                     print(f'Subtract {normfactor2} * Row {i+1} from Row {x+1}.')
                     print(matrix)
@@ -120,7 +167,7 @@ def ref(
             normfactor3 = matrix.item((i,j))
             scaling_factors.append(normfactor3)
             for l in range(m):
-                matrix.itemset((i,l),(1/normfactor3)*matrix.item((i,l)))
+                matrix.itemset((i,l),round((1/normfactor3)*matrix.item((i,l)),10))
             if steps:
                 print(f'Scale Row {i+1} by {normfactor3}.')
                 print(matrix)
@@ -174,16 +221,15 @@ def rref(
         matrix_ref = matrix_ref.astype('float64')
     n, m = matrix.shape
     i = 1
-    while i < min(n,m) and matrix_ref[i][i] in [0,1]:
-        if matrix_ref[i][i] == 1:
-            for j in range(i):
-                normfactor = matrix_ref[j][i]
-                for k in range(m):
-                    #print(f'A[{j},{k}] = {matrix_ref[j][k]} - {normfactor} * {matrix_ref[i][k]}')
-                    matrix_ref.itemset((j,k), matrix_ref[j][k] - normfactor*matrix_ref[i][k])
-                if steps:
-                    print(f'Subtract {normfactor} * Row {i+1} from Row {j+1}')
-                    print(matrix_ref)
+    while i < min(n,m) and round(matrix_ref[i][i],10) in [0,1]:
+        for j in range(i):
+            normfactor = matrix_ref[j][i]
+            for k in range(m):
+                #print(f'A[{j},{k}] = {matrix_ref[j][k]} - {normfactor} * {matrix_ref[i][k]}')
+                matrix_ref.itemset((j,k), round(matrix_ref[j][k] - normfactor*matrix_ref[i][k],10))
+            if steps:
+                print(f'Subtract {normfactor} * Row {i+1} from Row {j+1}')
+                print(matrix_ref)
         i += 1
     return matrix_ref
 
@@ -421,6 +467,7 @@ def det_from_qr(
 
 if __name__ == '__main__':
     A = np.random.randint(0,10,(4,4))
+    # A = np.array([[2,1,0],[1,0,0],[1,1,0]])
     print(A)
     # Q,R = qr_decomposition(A,steps=True)
     # print(Q)
@@ -428,5 +475,12 @@ if __name__ == '__main__':
     # print(R)
     # print(det_from_ref(R))
     # print(Q@R)
-    print(np.linalg.eig(A)[0])
-    print(eigenvalues_from_qr(A))
+    # print(np.linalg.eig(A)[0])
+    # print(eigenvalues_from_qr(A))
+    # B = rref(A)
+    C = sympy.Matrix(A).rref()
+    print(C)
+    # print(B)
+    # p = pivot_positions(A)
+    # print(p)
+    information(A,verbose=True)
