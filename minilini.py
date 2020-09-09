@@ -8,7 +8,7 @@
     ##    ## ###### ##  ### ######     ###### ###### ##  ### ######
 ______________________________________________________________________
 
-    mINIlINI - A very (very) small Linear Algebra library providing step-by-step solutions
+    MiniLini - A very (very) small Linear Algebra library providing step-by-step solutions
                 to linear algebra problems.
 
         Functions that include step-by-step solutions:
