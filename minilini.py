@@ -12,12 +12,14 @@ ______________________________________________________________________
                 to linear algebra problems.
 
         Functions that include step-by-step solutions:
-            ref     - Row Echelon Form
-            rref    - Reduced Row Echelon Form
-            det     - Determinant
-            qr_dec  - QR Decomposition
-            eig_qr  - Eigenvalues from QR
-            det_qr  - Determinant from QR
+            ref         - Row Echelon Form
+            rref        - Reduced Row Echelon Form
+            det         - Determinant
+            qr_dec      - QR Decomposition
+            eig_qr      - Eigenvalues from QR
+            det_qr      - Determinant from QR
+            information - Give info about matrix
+            pivot_pos   - Positions of the pivots
 
             TODO
             eigenvalues
@@ -33,6 +35,8 @@ import sympy
 
 from fractions import Fraction
 from typing import Tuple, Any
+
+np.set_printoptions(precision=2)
 
 
 
@@ -53,7 +57,6 @@ def pivot_positions(
 ) -> int:
     #if not rref_check(matrix):
     matrix = rref(matrix)
-    print(matrix)
     m,n = matrix.shape
     positions = {key: [] for key in range(n)}
     for i in range(n):
@@ -62,8 +65,6 @@ def pivot_positions(
                 positions[j].append(i)
                 break
     return [positions[key][0] for key in positions.keys() if positions[key] != []], matrix
-
-
 
 
 
@@ -78,24 +79,30 @@ def information(
     """
     size = matrix.shape
     matrix_ref, scaling_factors = ref(matrix)
-    pivots,_ = pivot_positions(matrix_ref)
-    free_vars = filter(lambda i: i not in pivots, list(range(size[1])))
+    pivots, matrix_rref = pivot_positions(matrix_ref)
+    free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]))))
     rank = len(pivots)
     det = round(np.prod(scaling_factors),2)*(rank == size[1])
     nullity = size[1] - rank
     ld = "linearly INDEPENDENT." if rank == size[1] else "linearly DEPENDENT."
+    # null = nullspace(matrix_rref,free_vars)
     if verbose:
         print("Information about the Matrix:\n")
         print(matrix)
+        print("\nRow Echelon Form:\n")
+        print(matrix_ref)
+        print("\nReduced Row Echelon Form:\n")
+        print(matrix_rref)
         print(f"\nRows: \t\t {size[0]}")
         print(f"Columns: \t {size[1]}")
         print(f"Rank: \t\t {rank}")
         print(f"Nullity: \t {nullity}")
         print(f"Invertible: \t {rank == size[1]}")
-        print(f"Determinant: \t {det}")
         if size[0] == size[1]:
-            print(f"Eigenvalues: \t {eigenvalues_from_qr(matrix)}")
-        print(f"Basis of Col: \t Columns {[i+1 for i in pivots]}")
+            print(f"Determinant: \t {det}")
+            print(f"Eigenvalues: \t {list(np.linalg.eig(matrix)[0])}")
+        print(f"Basis of Col: \t {[list(matrix[:,i]) for i in pivots]}")
+        # print(f"Basis of Nul: \t {null}")
         print(f"Free Vars: \t {[i+1 for i in free_vars]}")
         print(f"Columns of A are " + ld)
 
@@ -453,7 +460,7 @@ def eigenvalues_from_qr(
     t_complex: bool = False
 ) -> Tuple:
     """
-    Works if the matrix has real eigenvalues.
+    Works if the matrix has real eigenvalues using the QR decomp
     """
     s = time.time()
     e = s
@@ -478,21 +485,5 @@ def det_from_qr(
 
 
 if __name__ == '__main__':
-    A = np.random.randint(0,4,(3,3))
-    # A = np.array([[2,1,0],[1,0,0],[1,1,0]])
-    # print(A)
-    # Q,R = qr_decomposition(A,steps=True)
-    # print(Q)
-    # print(det_from_ref(Q))
-    # print(R)
-    # print(det_from_ref(R))
-    # print(Q@R)
-    # print(np.linalg.eig(A)[0])
-    # print(eigenvalues_from_qr(A))
-    # B = rref(A)
-    # C = sympy.Matrix(A).rref()
-    # print(C)
-    # print(B)
-    # p = pivot_positions(A)
-    # print(p)
+    A = np.random.randint(0,4,(4,5))
     information(A,verbose=True)
