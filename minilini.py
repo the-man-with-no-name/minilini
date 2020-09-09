@@ -78,9 +78,12 @@ def information(
     """
     size = matrix.shape
     matrix_ref, scaling_factors = ref(matrix)
-    pivots, matrix_rref = pivot_positions(matrix_ref)
+    pivots,_ = pivot_positions(matrix_ref)
+    free_vars = filter(lambda i: i not in pivots, list(range(size[1])))
     rank = len(pivots)
+    det = round(np.prod(scaling_factors),2)*(rank == size[1])
     nullity = size[1] - rank
+    ld = "linearly INDEPENDENT." if rank == size[1] else "linearly DEPENDENT."
     if verbose:
         print("Information about the Matrix:\n")
         print(matrix)
@@ -89,7 +92,12 @@ def information(
         print(f"Rank: \t\t {rank}")
         print(f"Nullity: \t {nullity}")
         print(f"Invertible: \t {rank == size[1]}")
-        print(f"Determinant: \t {round(np.prod(scaling_factors),2)}")
+        print(f"Determinant: \t {det}")
+        if size[0] == size[1]:
+            print(f"Eigenvalues: \t {eigenvalues_from_qr(matrix)}")
+        print(f"Basis of Col: \t Columns {[i+1 for i in pivots]}")
+        print(f"Free Vars: \t {[i+1 for i in free_vars]}")
+        print(f"Columns of A are " + ld)
 
 
 
@@ -307,7 +315,7 @@ def det_from_ref(
     steps: bool = False,
     as_fractions: bool = False
 ) -> float:
-    matrix_ref, scaling_factors = ref(matrix,steps=steps,as_fractions=as_fractions)
+    _, scaling_factors = ref(matrix,steps=steps,as_fractions=as_fractions)
     return np.prod(scaling_factors)
 
 
@@ -360,7 +368,7 @@ def det_steps(
                 s += ' + '
             else:
                 s += ' - '
-            s += f'({row1[i]} * {det(minori, shape-1, datatype=datatype, steps=True)})'
+            s += f'({row1[i]} * {det(minori, shape-1, datatype=datatype)})'
         return s
 
 
@@ -447,10 +455,14 @@ def eigenvalues_from_qr(
     """
     Works if the matrix has real eigenvalues.
     """
-    while not ut_tol(matrix,tol=tol):
+    s = time.time()
+    e = s
+    while not ut_tol(matrix,tol=tol) and e-s < 10:
         Q,R = qr_decomposition(matrix)
         matrix = R@Q
-    print(matrix)
+        e = time.time()
+    if e - s >= 100:
+        return "[[timeout finding eigenvalues]]"
     return np.diagonal(matrix)
 
 
@@ -466,9 +478,9 @@ def det_from_qr(
 
 
 if __name__ == '__main__':
-    A = np.random.randint(0,10,(4,4))
+    A = np.random.randint(0,4,(3,3))
     # A = np.array([[2,1,0],[1,0,0],[1,1,0]])
-    print(A)
+    # print(A)
     # Q,R = qr_decomposition(A,steps=True)
     # print(Q)
     # print(det_from_ref(Q))
@@ -478,8 +490,8 @@ if __name__ == '__main__':
     # print(np.linalg.eig(A)[0])
     # print(eigenvalues_from_qr(A))
     # B = rref(A)
-    C = sympy.Matrix(A).rref()
-    print(C)
+    # C = sympy.Matrix(A).rref()
+    # print(C)
     # print(B)
     # p = pivot_positions(A)
     # print(p)
