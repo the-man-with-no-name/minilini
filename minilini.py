@@ -8,7 +8,7 @@
     ##    ## ###### ##  ### ######     ###### ###### ##  ### ######
 ______________________________________________________________________
 
-    MiniLini - A very (very) small Linear Algebra library providing step-by-step solutions
+    mINIlINI - A very (very) small Linear Algebra library providing step-by-step solutions
                 to linear algebra problems.
 
         Functions that include step-by-step solutions:
@@ -100,7 +100,7 @@ def information(
         print(f"Invertible: \t {rank == size[1]}")
         if size[0] == size[1]:
             print(f"Determinant: \t {det}")
-            print(f"Eigenvalues: \t {list(np.linalg.eig(matrix)[0])}")
+            print(f"Eigenvalues: \t {np.round(list(np.linalg.eig(matrix)[0]),2)}")
         print(f"Basis of Col: \t {[list(matrix[:,i]) for i in pivots]}")
         # print(f"Basis of Nul: \t {null}")
         print(f"Free Vars: \t {[i+1 for i in free_vars]}")
@@ -485,5 +485,5 @@ def det_from_qr(
 
 
 if __name__ == '__main__':
-    A = np.random.randint(0,4,(4,5))
+    A = np.random.randint(0,4,(4,4))
     information(A,verbose=True)
