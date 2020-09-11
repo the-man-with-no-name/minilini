@@ -78,6 +78,7 @@ def information(
         all from inv mat thm
     """
     size = matrix.shape
+    square = size[0] == size[1]
     matrix_ref, scaling_factors = ref(matrix)
     pivots, matrix_rref = pivot_positions(matrix_ref)
     free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]))))
@@ -98,7 +99,7 @@ def information(
         print(f"Rank: \t\t {rank}")
         print(f"Nullity: \t {nullity}")
         print(f"Invertible: \t {rank == size[1]}")
-        if size[0] == size[1]:
+        if square:
             print(f"Determinant: \t {det}")
             print(f"Eigenvalues: \t {np.round(list(np.linalg.eig(matrix)[0]),2)}")
         print(f"Basis of Col: \t {[list(matrix[:,i]) for i in pivots]}")
