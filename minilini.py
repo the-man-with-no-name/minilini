@@ -69,16 +69,46 @@ def pivot_positions(
 
 
 
+def inconsistent_a(
+    matrix: npt.NDArray[Any,Any]
+) -> bool:
+    size = matrix.shape
+    for i in range(size[0]):
+        rowi = matrix[i,:]
+        for j in range(size[1]-1):
+            if rowi[j] != 0:
+                return False
+        if rowi[size[1]-1] == 0:
+            return False
+    return True
+
+
+
+def inconsistent_c(
+    matrix: npt.NDArray[Any,Any]
+) -> bool:
+    size = matrix.shape
+    for i in range(size[0]):
+        rowi = matrix[i,:]
+        for j in range(size[1]-1):
+            if rowi[j] != 0:
+                return False
+    return True
+
+
+
+
 def information(
     matrix: npt.NDArray[Any,Any],
-    verbose: bool = False
+    verbose: bool = False,
+    augmented: bool = False,
+    coefficient: bool = False
 ) -> None:
     """
     Get relavent information about matrix 
         all from inv mat thm
     """
     size = matrix.shape
-    square = size[0] == size[1]
     matrix_ref, scaling_factors = ref(matrix)
     pivots, matrix_rref = pivot_positions(matrix_ref)
     free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]))))
@@ -86,6 +116,10 @@ def information(
     det = round(np.prod(scaling_factors),2)*(rank == size[1])
     nullity = size[1] - rank
     ld = "linearly INDEPENDENT." if rank == size[1] else "linearly DEPENDENT."
+    if augmented:
+        consistency = "INCONSISTENT" if inconsistent_a(matrix) else "CONSISTENT"
+    if coefficient:
+        consistency = "INCONSISTENT" if inconsistent_c(matrix) else "CONSISTENT"
     # null = nullspace(matrix_rref,free_vars)
     if verbose:
         print("Information about the Matrix:\n")
@@ -99,13 +133,17 @@ def information(
         print(f"Rank: \t\t {rank}")
         print(f"Nullity: \t {nullity}")
         print(f"Invertible: \t {rank == size[1]}")
-        if square:
+        if size[0] == size[1]:
             print(f"Determinant: \t {det}")
             print(f"Eigenvalues: \t {np.round(list(np.linalg.eig(matrix)[0]),2)}")
         print(f"Basis of Col: \t {[list(matrix[:,i]) for i in pivots]}")
         # print(f"Basis of Nul: \t {null}")
         print(f"Free Vars: \t {[i+1 for i in free_vars]}")
         print(f"Columns of A are " + ld)
+        if augmented and not coefficient:
+            print(f"The associated system of {size[0]} equations in {size[1]-1} variables is {consistency}.")
+        if coefficient and not augmented:
+            print(f"The associated system of {size[0]} equations in {size[1]} variables is {consistency}.")
 
 
 
@@ -487,4 +525,4 @@ def det_from_qr(
 
 if __name__ == '__main__':
     A = np.random.randint(0,4,(4,4))
-    information(A,verbose=True)
+    information(A,verbose=True,coefficient=True)
