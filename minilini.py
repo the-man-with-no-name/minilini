@@ -55,7 +55,9 @@ class MatrixDimensionException(Exception):
 def pivot_positions(
     matrix: npt.NDArray[Any,Any]
 ) -> int:
-    #if not rref_check(matrix):
+    """
+    Find the pivot positions of the matrix
+    """
     matrix = rref(matrix)
     m,n = matrix.shape
     positions = {key: [] for key in range(n)}
@@ -72,28 +74,37 @@ def pivot_positions(
 def inconsistent_a(
     matrix: npt.NDArray[Any,Any]
 ) -> bool:
+    """
+    Determine if the augmented matrix is inconsistent
+        zero row with nonzero last entry
+    """
     size = matrix.shape
+    rowzero = True
     for i in range(size[0]):
         rowi = matrix[i,:]
+        rowzero = True
         for j in range(size[1]-1):
-            if rowi[j] != 0:
-                return False
-        if rowi[size[1]-1] == 0:
-            return False
-    return True
+            rowzero = rowzero and rowi[j] == 0
+        if rowzero and rowi[size[1]-1] != 0:
+            return True
+    return False
 
 
 
 def inconsistent_c(
     matrix: npt.NDArray[Any,Any]
 ) -> bool:
+    """
+    Determine if the coefficient matrix is inconsistent
+        zero row 
+    """
     size = matrix.shape
+    rowzero = True
     for i in range(size[0]):
         rowi = matrix[i,:]
         for j in range(size[1]-1):
-            if rowi[j] != 0:
-                return False
-    return True
+            rowzero = rowzero and rowi[j] == 0
+    return rowzero
 
 
 
@@ -101,8 +112,7 @@ def inconsistent_c(
 def information(
     matrix: npt.NDArray[Any,Any],
     verbose: bool = False,
-    augmented: bool = False,
-    coefficient: bool = False
+    augmented: bool = False
 ) -> None:
     """
     Get relavent information about matrix 
@@ -117,9 +127,9 @@ def information(
     nullity = size[1] - rank
     ld = "linearly INDEPENDENT." if rank == size[1] else "linearly DEPENDENT."
     if augmented:
-        consistency = "INCONSISTENT" if inconsistent_a(matrix) else "CONSISTENT"
-    if coefficient:
-        consistency = "INCONSISTENT" if inconsistent_c(matrix) else "CONSISTENT"
+        consistency = "INCONSISTENT" if inconsistent_a(matrix_rref) else "CONSISTENT"
+    else:
+        consistency = "INCONSISTENT" if inconsistent_c(matrix_rref) else "CONSISTENT"
     # null = nullspace(matrix_rref,free_vars)
     if verbose:
         print("Information about the Matrix:\n")
@@ -140,9 +150,9 @@ def information(
         # print(f"Basis of Nul: \t {null}")
         print(f"Free Vars: \t {[i+1 for i in free_vars]}")
         print(f"Columns of A are " + ld)
-        if augmented and not coefficient:
+        if augmented:
             print(f"The associated system of {size[0]} equations in {size[1]-1} variables is {consistency}.")
-        if coefficient and not augmented:
+        else:
             print(f"The associated system of {size[0]} equations in {size[1]} variables is {consistency}.")
 
 
@@ -525,4 +535,4 @@ def det_from_qr(
 
 if __name__ == '__main__':
     A = np.random.randint(0,4,(4,4))
-    information(A,verbose=True,coefficient=True)
+    information(A,verbose=True,augmented=False)
