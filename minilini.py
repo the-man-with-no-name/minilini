@@ -41,6 +41,38 @@ np.set_printoptions(precision=2)
 
 
 
+class Frac(object):
+
+    def __init__(self, num=0, denom=1):
+        self.numerator = num
+        self.denominator = denom
+
+    def __str__(self):
+        if self.numerator < 0 and self.denominator > 0:
+            s, m = "-", -1  
+            if self.denominator != 1:
+                return s + f"{m*self.numerator}/{self.denominator}"
+            else:
+                return s + f"{m*self.numerator}"
+        elif self.numerator > 0 and self.denominator < 0:
+            s, m = "-", -1  
+            if self.denominator != -1:
+                return s + f"{self.numerator}/{m*self.denominator}"
+            else:
+                return s + f"{self.numerator}"
+        else:
+            s, m = "", 1  
+            if self.denominator != 1:
+                return s + f"{m*self.numerator}/{self.denominator}"
+            else:
+                return s + f"{m*self.numerator}"
+
+    def __mul__(self, other):
+        return
+
+
+
+
 class MatrixDimensionException(Exception):
     """
     Raise this exception when there are issues with the matrix dimensions.
@@ -121,7 +153,10 @@ def information(
     size = matrix.shape
     matrix_ref, scaling_factors = ref(matrix)
     pivots, matrix_rref = pivot_positions(matrix_ref)
-    free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]))))
+    if augmented:
+        free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]-1))))
+    else:
+        free_vars = list(filter(lambda i: i not in pivots, list(range(size[1]))))
     rank = len(pivots)
     det = round(np.prod(scaling_factors),2)*(rank == size[1])
     nullity = size[1] - rank
@@ -547,5 +582,5 @@ def det_from_qr(
 
 
 if __name__ == '__main__':
-    A = np.random.randint(0,4,(4,4))
-    information(A,verbose=True,augmented=False)
+    A = np.random.randint(0,4,(3,3))
+    information(A,verbose=True,augmented=True)
