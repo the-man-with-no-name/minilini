@@ -154,7 +154,20 @@ def information(
             print(f"The associated system of {size[0]} equations in {size[1]-1} variables is {consistency}.")
         else:
             print(f"The associated system of {size[0]} equations in {size[1]} variables is {consistency}.")
-
+        if augmented:
+            if size[0] < size[1]-1:
+                print(f"The associated system is UNDERDETERMINED.")
+            elif size[0] == size[1]-1:
+                print(f"The associated system is EXACTLY DETERMINED.")
+            else:
+                print(f"The associated system is OVERDETERMINED.")
+        else:
+            if size[0] < size[1]:
+                print(f"The associated system is UNDERDETERMINED.")
+            elif size[0] == size[1]:
+                print(f"The associated system is EXACTLY DETERMINED.")
+            else:
+                print(f"The associated system is OVERDETERMINED.")
 
 
 
