@@ -12,7 +12,7 @@ A very (very) small linear algebra library providing step-by-step solutions to v
 
 Finding the row echelon form of a matrix is one of the most essential skills in introductory linear algebra. For an ordinary matrix, that is, a matrix that is not the augmented matrix of a system of equations, the row echelon form can tell us the rank and determinant of a matrix as well as whether the columns of the matrix are linearly independent or not. For an augemented matrix, one can tell whether the associated system is inconsistent or not.
 
-### Basic Example
+### Example 1
 
 Suppose we have the following matrix
 
@@ -40,7 +40,7 @@ and
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Ctext%7BscalingFactorsA%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%201%20%26%20-1%20%26%20-1%20%26%206%20%5Cend%7Bbmatrix%7D.)
 
-### Advanced Example
+### Example 2
 
 Let's take the same matrix as in the Basic Example above
 
@@ -99,7 +99,7 @@ This comprises a step-by-step solution to the problem of finding the row echelon
 
 The reduced row echelon form of a matrix is a natural extension to the process of finding the row echelon form. For one, it allows us to determine whether a matrix is invertible or not. The usage of `rref` is very similar to that of the `ref` function. 
 
-### Example
+### Example 1
 
 Using the same matrix ![equation](https://latex.codecogs.com/gif.latex?A) as above and initializing the matrix in python, we use `rref` as follows
 
@@ -140,6 +140,8 @@ def information(
 ```
 
 with one required argument, a matrix, and two optional arguments. The verbose argument is default set to `True`. If one would like less information about the input matrix, set `verbose = False`. The augmented argument is also default set to `False`. If the input matrix is the augmented matrix representing a system of equations, set `augmented = True`. 
+
+### Example 1
 
 Let's again, let ![equation](https://latex.codecogs.com/gif.latex?A) be the matrix from before, then running
 
@@ -186,6 +188,8 @@ Columns of A are linearly INDEPENDENT.
 The associated system of 3 equations in 3 variables is CONSISTENT.
 The associated system is EXACTLY DETERMINED.
 ```
+
+### Example 2
 
 If we instead set `augmented = True`, a few things about the information will change
 
@@ -246,7 +250,7 @@ and if this is an augmented matrix, the associated system is
 
 The determinant of a matrix is a scalar associated with every square matrix from which various properties of a matrix can be determined. For example, a matrix is invertable if and only if the determinant of that matrix is not zero. 
 
-### Example
+### Example 1
 
 Working with our same sample matrix ![equation](https://latex.codecogs.com/gif.latex?A), we can calculate the determinant of this matrix using the cofactor expansion method with the function `det_steps`. Executing the code
 
