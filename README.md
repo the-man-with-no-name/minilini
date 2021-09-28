@@ -7,9 +7,6 @@ A very (very) small linear algebra library providing step-by-step solutions to v
 1. Row Echelon Form (`ref`)
 2. Reduced Row Echelon Form (`rref`)
 3. Determinant (`det`)
-4. QR Decomposition (`qr_dec`)
-5. Eigenvalues from QR Decomposition (`eig_qr`)
-6. Determinant from QR Decomposition (`det_qr`)
 
 ## Row Echelon Form
 
@@ -167,7 +164,7 @@ Information about the Matrix:
 Row Echelon Form:
 
 [[ 1.  2.  1.]
- [-0.  1. -3.]
+ [ 0.  1. -3.]
  [ 0.  0.  1.]]
 
 Reduced Row Echelon Form:
@@ -213,7 +210,7 @@ Information about the Matrix:
 Row Echelon Form:
 
 [[ 1.  2.  1.]
- [-0.  1. -3.]
+ [ 0.  1. -3.]
  [ 0.  0.  1.]]
 
 Reduced Row Echelon Form:
@@ -238,7 +235,25 @@ The associated system is OVERDETERMINED.
 
 The reason for this is because, if this is not an augmented matrix, the associated system is 
 
+![equation](https://latex.codecogs.com/gif.latex?%5Cbegin%7Barray%7D%7Bl%7D%20x%20&plus;%202y%20&plus;%20z%20%3D%200%20%5C%5C%202x%20&plus;%204y%20&plus;%208z%20%3D%200%20%5C%5C%20x%20&plus;%20y%20&plus;%204z%20%3D%200%20%5Cend%7Barray%7D,)
+
+and if this is an augmented matrix, the associated system is 
+
+![equation](https://latex.codecogs.com/gif.latex?%5Cbegin%7Barray%7D%7Bl%7D%20x%20&plus;%202y%20%3D%201%20%5C%5C%202x%20&plus;%204y%20%3D%208%20%5C%5C%20x%20&plus;%20y%20%3D%204%20%5Cend%7Barray%7D.)
+
 
 ## Determinant
 
-The determinant of a matrix is a scalar associated with every square matrix from which various properties of a matrix can be determined. For example, a matrix is invertable if and only if the determinant of that matrix is not zero.
+The determinant of a matrix is a scalar associated with every square matrix from which various properties of a matrix can be determined. For example, a matrix is invertable if and only if the determinant of that matrix is not zero. 
+
+### Example
+
+Working with our same sample matrix ![equation](https://latex.codecogs.com/gif.latex?A), we can calculate the determinant of this matrix using the cofactor expansion method with the function `det_steps`. Executing the code
+
+```python
+ml.det_steps(A)
+```
+
+we obtain
+
+![equation](https://latex.codecogs.com/gif.latex?%281%29%20*%20%28%28%284%29%20*%20%284%29%29%20-%20%28%288%29%20*%20%281%29%29%29%29%20-%20%28%282%29%20*%20%28%28%282%29%20*%20%284%29%29%20-%20%28%288%29%20*%20%281%29%29%29%29%20&plus;%20%28%281%29%20*%20%28%28%282%29%20*%20%281%29%29%20-%20%28%284%29%20*%20%281%29%29%29%29.)
